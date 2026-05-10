@@ -1,1 +1,872 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DasturxonBook — Stol Bron Qilish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1c3d2e;
+      --green-light: #e8f0eb;
+      --gold: #c5a96b;
+      --bg: #f5f3ef;
+      --white: #ffffff;
+      --border: #e5e0d8;
+      --text: #1a1a18;
+      --muted: #6b6660;
+      --hint: #9b9690;
+      --success-bg: #eaf3de;
+      --success: #3b6d11;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--green);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { color: #e8f0eb; font-size: 18px; font-weight: 500; letter-spacing: 0.04em; }
+    .logo span { font-size: 11px; color: rgba(255,255,255,0.35); display: block; margin-top: 2px; letter-spacing: 0.1em; }
+
+    /* ── Language switcher ── */
+    .lang-switch { display: flex; gap: 4px; }
+    .lang-btn {
+      background: rgba(255,255,255,0.1);
+      border: 0.5px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.2); color: #fff; }
+
+    /* ── Layout ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+
+    /* ── Restaurant card ── */
+    .restaurant-card {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .rest-avatar {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #e8f0eb; font-weight: 600;
+      flex-shrink: 0;
+    }
+    .rest-name { font-size: 17px; font-weight: 600; }
+    .rest-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .source-pill {
+      margin-left: auto;
+      font-size: 11px;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      color: var(--hint);
+    }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 24px;
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .step-tab {
+      flex: 1;
+      padding: 14px 8px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--hint);
+      border-right: 0.5px solid var(--border);
+      transition: all 0.2s;
+    }
+    .step-tab:last-child { border-right: none; }
+    .step-tab.active { background: var(--green); color: #fff; }
+    .step-tab.done { background: var(--success-bg); color: var(--success); }
+    .step-num-label { font-size: 10px; opacity: 0.6; display: block; margin-bottom: 2px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .card-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 16px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); }
+    textarea { resize: none; height: 80px; }
+
+    /* ── Party stepper ── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .stepper-btn {
+      width: 44px; height: 44px;
+      background: var(--bg);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stepper-btn:hover { background: #e8e4dc; }
+    .stepper-val {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      border-left: 0.5px solid var(--border);
+      border-right: 0.5px solid var(--border);
+      padding: 10px 0;
+    }
+
+    /* ── Time slots ── */
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+    .time-slot {
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+      background: var(--white);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .time-slot:hover:not(.unavailable) { background: var(--bg); border-color: var(--green); }
+    .time-slot.selected { background: var(--green); color: #fff; border-color: var(--green); }
+    .time-slot.unavailable { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+    .slot-avail { font-size: 10px; color: var(--hint); margin-top: 2px; }
+    .time-slot.selected .slot-avail { color: rgba(255,255,255,0.6); }
+
+    /* ── Occasions ── */
+    .occasion-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border);
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--bg);
+      color: var(--muted);
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .chip.selected { background: #faeeda; color: #7a5c2e; border-color: var(--gold); }
+
+    /* ── Confirm rows ── */
+    .confirm-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 0.5px solid var(--border);
+      font-size: 14px;
+    }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-key { color: var(--muted); }
+    .confirm-val { font-weight: 500; }
+
+    /* ── Notify options ── */
+    .notify-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .notify-opt {
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex; gap: 12px; align-items: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .notify-opt.selected { border-color: var(--green); background: var(--green-light); }
+    .notify-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .notify-opt.selected .notify-icon { background: var(--green); }
+    .notify-title { font-size: 14px; font-weight: 500; }
+    .notify-desc { font-size: 11px; color: var(--hint); }
+
+    /* ── Phone row ── */
+    .phone-row { display: flex; gap: 8px; }
+    .phone-code { width: 90px; flex-shrink: 0; }
+
+    /* ── Actions ── */
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-secondary:hover { background: var(--bg); }
+
+    /* ── Success ── */
+    .success-wrap {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .success-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--success-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      margin: 0 auto 20px;
+    }
+    .success-title { font-size: 26px; font-weight: 600; margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: var(--muted); max-width: 320px; margin: 0 auto 24px; line-height: 1.6; }
+    .ref-code {
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      letter-spacing: 0.2em;
+      color: #7a5c2e;
+      background: #f0ece4;
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .sent-badges { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+    .badge {
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 0.5px solid #c0dd97;
+    }
+
+    /* ── Panes ── */
+    .pane { display: none; }
+    .pane.active { display: block; }
+
+    /* ── Error ── */
+    .error-msg { color: #a32d2d; font-size: 13px; margin-top: 8px; display: none; }
+    .error-msg.show { display: block; }
+
+    @media (max-width: 480px) {
+      .time-grid { grid-template-columns: repeat(3, 1fr); }
+      .field-row { grid-template-columns: 1fr; }
+      .notify-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    DasturxonBook
+    <span id="header-tagline">Stol bron qilish platformasi</span>
+  </div>
+  <div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('uz')">UZ</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Restaurant info -->
+  <div class="restaurant-card" id="restaurant-card">
+    <div class="rest-avatar" id="rest-avatar">V</div>
+    <div>
+      <div class="rest-name" id="rest-name">Volta</div>
+      <div class="rest-meta" id="rest-meta">Toshkent · Amir Temur ko'chasi</div>
+    </div>
+    <div class="source-pill" id="source-pill">restoran saytidan</div>
+  </div>
+
+  <!-- Step tabs -->
+  <div class="steps">
+    <div class="step-tab active" id="tab-0">
+      <span class="step-num-label">1</span>
+      <span id="tab-label-0">Sana & vaqt</span>
+    </div>
+    <div class="step-tab" id="tab-1">
+      <span class="step-num-label">2</span>
+      <span id="tab-label-1">Ma'lumotlar</span>
+    </div>
+    <div class="step-tab" id="tab-2">
+      <span class="step-num-label">3</span>
+      <span id="tab-label-2">Tasdiqlash</span>
+    </div>
+  </div>
+
+  <!-- ── Step 1: Date & Time ── -->
+  <div class="pane active" id="pane-0">
+    <div class="card">
+      <div class="card-title" id="s1-title">Qachon tashrif buyurasiz?</div>
+      <div class="card-sub" id="s1-sub">Sana, mehmonlar soni va vaqtni tanlang</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label id="lbl-date">Sana</label>
+          <input type="date" id="res-date" />
+        </div>
+        <div class="field">
+          <label id="lbl-party">Mehmonlar soni</label>
+          <div class="stepper">
+            <button class="stepper-btn" onclick="changeParty(-1)">−</button>
+            <div class="stepper-val" id="party-val">2</div>
+            <button class="stepper-btn" onclick="changeParty(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-times">Bo'sh vaqtlar</label>
+        <div class="time-grid" id="time-grid">
+          <div class="time-slot unavailable" data-t="17:30">17:30<div class="slot-avail" id="avail-1730">To'liq</div></div>
+          <div class="time-slot" data-t="18:00" onclick="selectTime(this)">18:00<div class="slot-avail" id="avail-1800">4 joy</div></div>
+          <div class="time-slot" data-t="18:30" onclick="selectTime(this)">18:30<div class="slot-avail" id="avail-1830">Bo'sh</div></div>
+          <div class="time-slot" data-t="19:00" onclick="selectTime(this)">19:00<div class="slot-avail" id="avail-1900">Bo'sh</div></div>
+          <div class="time-slot" data-t="19:30" onclick="selectTime(this)">19:30<div class="slot-avail" id="avail-1930">2 joy</div></div>
+          <div class="time-slot unavailable" data-t="20:00">20:00<div class="slot-avail" id="avail-2000">To'liq</div></div>
+          <div class="time-slot" data-t="20:30" onclick="selectTime(this)">20:30<div class="slot-avail" id="avail-2030">Bo'sh</div></div>
+          <div class="time-slot" data-t="21:00" onclick="selectTime(this)">21:00<div class="slot-avail" id="avail-2100">Bo'sh</div></div>
+        </div>
+        <div class="error-msg" id="err-time">Iltimos, vaqtni tanlang</div>
+      </div>
+
+      <div class="actions" style="justify-content:flex-end;">
+        <button class="btn-primary" onclick="goStep(1)" id="btn-next-1">Davom etish →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Step 2: Guest Details ── -->
+  <div class="pane" id="pane-1">
+    <div class="card">
+      <div class="card-title" id="s2-title">Ma'lumotlaringiz</div>
+      <div class="card-sub" id="s2-sub">Tasdiqlash SMS va email orqali yuboriladi</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label id="lbl-fname">Ism</label>
+          <input type="text" id="fname" placeholder="Jasur" />
+        </div>
+        <div class="field">
+          <label id="lbl-lname">Familiya</label>
+          <input type="text" id="lname" placeholder="Toshmatov" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-email">Email manzil</label>
+        <input type="email" id="email" placeholder="jasur@gmail.com" />
+      </div>
+
+      <div class="field">
+        <label id="lbl-phone">Telefon (SMS uchun)</label>
+        <div class="phone-row">
+          <select class="phone-code" id="phone-code">
+            <option value="+998">🇺🇿 +998</option>
+            <option value="+7">🇷🇺 +7</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+1">🇺🇸 +1</option>
+          </select>
+          <input type="tel" id="phone" placeholder="90 123 45 67" />
+        </div>
+        <div class="error-msg" id="err-contact">Telefon yoki email kiritish shart</div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-occasion">Maxsus tadbir</label>
+        <div class="occasion-chips">
+          <div class="chip" onclick="toggleChip(this)" data-val="Tug'ilgan kun">🎂 <span id="occ-1">Tug'ilgan kun</span></div>
+          <div class="chip" onclick="toggleChip(this)" data-val="Yillik to'y">💍 <span id="occ-2">Yillik to'y</span></div>
+          <div class="chip" onclick="toggleChip(this)" data-val="Bayram">🎉 <span id="occ-3">Bayram</span></div>
+          <div class="chip" onclick="toggleChip(this)" data-val="Biznes">💼 <span id="occ-4">Biznes</span></div>
+          <div class="chip" onclick="toggleChip(this)" data-val="Romantik kecha">🌹 <span id="occ-5">Romantik kecha</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="lbl-notes">Izohlar va talablar</label>
+        <textarea id="notes" placeholder="Allergiya, yuqori stul, maxsus so'rov..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn-secondary" onclick="goStep(0)" id="btn-back-2">← Orqaga</button>
+        <button class="btn-primary" onclick="goStep(2)" id="btn-next-2">Bronni ko'rib chiqish →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Confirm ── -->
+  <div class="pane" id="pane-2">
+    <div class="card">
+      <div class="card-title" id="s3-title">Bronni tasdiqlang</div>
+      <div class="card-sub" id="s3-sub">Bron qilishdan oldin hamma narsani tekshiring</div>
+
+      <div id="summary">
+        <div class="confirm-row"><span class="confirm-key" id="lbl-rest">Restoran</span><span class="confirm-val" id="sum-rest">—</span></div>
+        <div class="confirm-row"><span class="confirm-key" id="lbl-cdate">Sana</span><span class="confirm-val" id="sum-date">—</span></div>
+        <div class="confirm-row"><span class="confirm-key" id="lbl-ctime">Vaqt</span><span class="confirm-val" id="sum-time">—</span></div>
+        <div class="confirm-row"><span class="confirm-key" id="lbl-cparty">Mehmonlar</span><span class="confirm-val" id="sum-party">—</span></div>
+        <div class="confirm-row"><span class="confirm-key" id="lbl-cname">Ism</span><span class="confirm-val" id="sum-name">—</span></div>
+      </div>
+
+      <div class="field" style="margin-top:20px;">
+        <label id="lbl-sendvia">Qaysi orqali yuborilsin</label>
+        <div class="notify-grid">
+          <div class="notify-opt selected" id="notif-sms" onclick="toggleNotif('sms')">
+            <div class="notify-icon" id="sms-icon">💬</div>
+            <div>
+              <div class="notify-title" id="notif-sms-title">SMS</div>
+              <div class="notify-desc" id="notif-sms-desc">Telefoningizga xabar</div>
+            </div>
+          </div>
+          <div class="notify-opt selected" id="notif-email" onclick="toggleNotif('email')">
+            <div class="notify-icon" id="email-icon">📧</div>
+            <div>
+              <div class="notify-title" id="notif-email-title">Email</div>
+              <div class="notify-desc" id="notif-email-desc">To'liq bron tafsilotlari</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-msg" id="err-submit">Xatolik yuz berdi. Qayta urining.</div>
+
+      <div class="actions">
+        <button class="btn-secondary" onclick="goStep(1)" id="btn-back-3">← Orqaga</button>
+        <button class="btn-primary" onclick="submitBooking()" id="btn-confirm">✓ Bronni tasdiqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Success ── -->
+  <div class="pane" id="pane-success">
+    <div class="card">
+      <div class="success-wrap">
+        <div class="success-icon">✓</div>
+        <div class="success-title" id="suc-title">Stol bron qilindi!</div>
+        <div class="success-sub" id="suc-sub">Broningiz tasdiqlandi. Telefon va emailingizni tekshiring.</div>
+        <div class="sent-badges">
+          <div class="badge" id="suc-sms">💬 SMS yuborildi</div>
+          <div class="badge" id="suc-email">📧 Email yuborildi</div>
+        </div>
+        <div class="ref-code" id="ref-display">BN-XXXXX</div>
+        <div style="font-size:12px;color:var(--hint);margin-bottom:28px;" id="suc-refnote">Bronni boshqarish uchun ushbu kodni saqlang</div>
+        <button class="btn-secondary" onclick="resetApp()" id="btn-again">Yangi bron qilish</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let currentLang = 'uz';
+let party = 2;
+let selectedTime = null;
+let selectedOccasion = null;
+let notifySMS = true;
+let notifyEmail = true;
+let currentStep = 0;
+
+// ── URL params ───────────────────────────────────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const restaurantSlug = params.get('restaurant') || 'volta';
+const source = params.get('source') || 'direct';
+const preDate = params.get('date');
+const preParty = params.get('party');
+const preTime = params.get('time');
+
+// Pre-fill from URL
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('res-date').value = preDate || today;
+document.getElementById('res-date').min = today;
+if (preParty) { party = parseInt(preParty); document.getElementById('party-val').textContent = party; }
+
+// ── Language strings ─────────────────────────────────────────────────────────
+const T = {
+  uz: {
+    tagline:'Stol bron qilish platformasi', tab0:'Sana & vaqt', tab1:"Ma'lumotlar", tab2:'Tasdiqlash',
+    s1title:'Qachon tashrif buyurasiz?', s1sub:'Sana, mehmonlar soni va vaqtni tanlang',
+    date:'Sana', party:'Mehmonlar soni', times:"Bo'sh vaqtlar", full:"To'liq", left:'joy', avail:"Bo'sh",
+    s2title:"Ma'lumotlaringiz", s2sub:'Tasdiqlash SMS va email orqali yuboriladi',
+    fname:'Ism', lname:'Familiya', email:'Email manzil', phone:'Telefon (SMS uchun)',
+    occasion:'Maxsus tadbir', notes:'Izohlar va talablar', nplaceholder:'Allergiya, yuqori stul...',
+    occ1:"Tug'ilgan kun", occ2:"Yillik to'y", occ3:'Bayram', occ4:'Biznes', occ5:'Romantik kecha',
+    s3title:'Bronni tasdiqlang', s3sub:'Bron qilishdan oldin hamma narsani tekshiring',
+    lrest:'Restoran', ldate:'Sana', ltime:'Vaqt', lparty:'Mehmonlar', lname:'Ism',
+    sendvia:'Qaysi orqali yuborilsin',
+    smstitle:'SMS', smsdesc:'Telefoningizga xabar', emailtitle:'Email', emaildesc:"To'liq bron tafsilotlari",
+    confirm:'✓ Bronni tasdiqlash', back:'← Orqaga', next:'Davom etish →', review:"Bronni ko'rib chiqish →",
+    guests:'mehmon', sucTitle:'Stol bron qilindi!',
+    sucSub:'Broningiz tasdiqlandi. Telefon va emailingizni tekshiring.',
+    smsSent:'💬 SMS yuborildi', emailSent:'📧 Email yuborildi',
+    refNote:'Bronni boshqarish uchun ushbu kodni saqlang', again:'Yangi bron qilish',
+    errTime:'Iltimos, vaqtni tanlang', errContact:'Telefon yoki email kiritish shart',
+    errSubmit:'Xatolik yuz berdi. Qayta urining.', sourcepill:'restoran saytidan',
+  },
+  ru: {
+    tagline:'Платформа бронирования столов', tab0:'Дата и время', tab1:'Данные', tab2:'Подтверждение',
+    s1title:'Когда планируете посетить?', s1sub:'Выберите дату, количество гостей и время',
+    date:'Дата', party:'Количество гостей', times:'Доступное время', full:'Занято', left:'мест', avail:'Свободно',
+    s2title:'Ваши данные', s2sub:'Подтверждение придёт по SMS и email',
+    fname:'Имя', lname:'Фамилия', email:'Email адрес', phone:'Телефон (для SMS)',
+    occasion:'Особый повод', notes:'Примечания', nplaceholder:'Аллергии, высокий стул...',
+    occ1:'День рождения', occ2:'Годовщина', occ3:'Праздник', occ4:'Деловая встреча', occ5:'Романтический вечер',
+    s3title:'Подтвердите бронирование', s3sub:'Проверьте все данные перед бронированием',
+    lrest:'Ресторан', ldate:'Дата', ltime:'Время', lparty:'Гостей', lname:'Имя',
+    sendvia:'Способ уведомления',
+    smstitle:'SMS', smsdesc:'Сообщение на телефон', emailtitle:'Email', emaildesc:'Полные детали',
+    confirm:'✓ Подтвердить бронирование', back:'← Назад', next:'Продолжить →', review:'Проверить бронирование →',
+    guests:'гост.', sucTitle:'Стол забронирован!',
+    sucSub:'Ваше бронирование подтверждено. Проверьте телефон и email.',
+    smsSent:'💬 SMS отправлен', emailSent:'📧 Email отправлен',
+    refNote:'Сохраните код для управления бронью', again:'Новое бронирование',
+    errTime:'Пожалуйста, выберите время', errContact:'Укажите телефон или email',
+    errSubmit:'Произошла ошибка. Попробуйте ещё раз.', sourcepill:'с сайта ресторана',
+  },
+  en: {
+    tagline:'Table Reservation Platform', tab0:'Date & Time', tab1:'Details', tab2:'Confirm',
+    s1title:'When would you like to dine?', s1sub:'Select a date, party size and preferred time',
+    date:'Date', party:'Party size', times:'Available times', full:'Full', left:'left', avail:'Available',
+    s2title:'Your details', s2sub:'Confirmation will be sent by SMS and email',
+    fname:'First name', lname:'Last name', email:'Email address', phone:'Phone (for SMS)',
+    occasion:'Special occasion', notes:'Notes & requirements', nplaceholder:'Allergies, high chair...',
+    occ1:'Birthday', occ2:'Anniversary', occ3:'Celebration', occ4:'Business meeting', occ5:'Date night',
+    s3title:'Confirm your reservation', s3sub:'Double check everything before booking',
+    lrest:'Restaurant', ldate:'Date', ltime:'Time', lparty:'Guests', lname:'Name',
+    sendvia:'Send confirmation via',
+    smstitle:'SMS', smsdesc:'Text to your phone', emailtitle:'Email', emaildesc:'Full booking details',
+    confirm:'✓ Confirm reservation', back:'← Back', next:'Continue →', review:'Review booking →',
+    guests:'guest(s)', sucTitle:'Table reserved!',
+    sucSub:'Your reservation is confirmed. Check your phone and email.',
+    smsSent:'💬 SMS sent', emailSent:'📧 Email sent',
+    refNote:'Keep this code to manage your booking', again:'Make another booking',
+    errTime:'Please select a time', errContact:'Phone or email is required',
+    errSubmit:'Something went wrong. Please try again.', sourcepill:'referred from restaurant site',
+  },
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  applyLang();
+}
+
+function applyLang() {
+  const t = T[currentLang];
+  document.getElementById('header-tagline').textContent = t.tagline;
+  document.getElementById('tab-label-0').textContent = t.tab0;
+  document.getElementById('tab-label-1').textContent = t.tab1;
+  document.getElementById('tab-label-2').textContent = t.tab2;
+  document.getElementById('s1-title').textContent = t.s1title;
+  document.getElementById('s1-sub').textContent = t.s1sub;
+  document.getElementById('lbl-date').textContent = t.date;
+  document.getElementById('lbl-party').textContent = t.party;
+  document.getElementById('lbl-times').textContent = t.times;
+  document.getElementById('s2-title').textContent = t.s2title;
+  document.getElementById('s2-sub').textContent = t.s2sub;
+  document.getElementById('lbl-fname').textContent = t.fname;
+  document.getElementById('lbl-lname').textContent = t.lname;
+  document.getElementById('lbl-email').textContent = t.email;
+  document.getElementById('lbl-phone').textContent = t.phone;
+  document.getElementById('lbl-occasion').textContent = t.occasion;
+  document.getElementById('lbl-notes').textContent = t.notes;
+  document.getElementById('notes').placeholder = t.nplaceholder;
+  document.getElementById('occ-1').textContent = t.occ1;
+  document.getElementById('occ-2').textContent = t.occ2;
+  document.getElementById('occ-3').textContent = t.occ3;
+  document.getElementById('occ-4').textContent = t.occ4;
+  document.getElementById('occ-5').textContent = t.occ5;
+  document.getElementById('s3-title').textContent = t.s3title;
+  document.getElementById('s3-sub').textContent = t.s3sub;
+  document.getElementById('lbl-rest').textContent = t.lrest;
+  document.getElementById('lbl-cdate').textContent = t.ldate;
+  document.getElementById('lbl-ctime').textContent = t.ltime;
+  document.getElementById('lbl-cparty').textContent = t.lparty;
+  document.getElementById('lbl-cname').textContent = t.lname;
+  document.getElementById('lbl-sendvia').textContent = t.sendvia;
+  document.getElementById('notif-sms-title').textContent = t.smstitle;
+  document.getElementById('notif-sms-desc').textContent = t.smsdesc;
+  document.getElementById('notif-email-title').textContent = t.emailtitle;
+  document.getElementById('notif-email-desc').textContent = t.emaildesc;
+  document.getElementById('btn-confirm').textContent = t.confirm;
+  document.getElementById('btn-back-2').textContent = t.back;
+  document.getElementById('btn-back-3').textContent = t.back;
+  document.getElementById('btn-next-1').textContent = t.next;
+  document.getElementById('btn-next-2').textContent = t.review;
+  document.getElementById('suc-title').textContent = t.sucTitle;
+  document.getElementById('suc-sub').textContent = t.sucSub;
+  document.getElementById('suc-sms').textContent = t.smsSent;
+  document.getElementById('suc-email').textContent = t.emailSent;
+  document.getElementById('suc-refnote').textContent = t.refNote;
+  document.getElementById('btn-again').textContent = t.again;
+  document.getElementById('source-pill').textContent = t.sourcepill;
+  document.getElementById('err-time').textContent = t.errTime;
+  document.getElementById('err-contact').textContent = t.errContact;
+  document.getElementById('err-submit').textContent = t.errSubmit;
+  // Update availability labels
+  document.getElementById('avail-1730').textContent = t.full;
+  document.getElementById('avail-2000').textContent = t.full;
+  document.getElementById('avail-1800').textContent = '4 ' + t.left;
+  document.getElementById('avail-1930').textContent = '2 ' + t.left;
+  document.getElementById('avail-1830').textContent = t.avail;
+  document.getElementById('avail-1900').textContent = t.avail;
+  document.getElementById('avail-2030').textContent = t.avail;
+  document.getElementById('avail-2100').textContent = t.avail;
+}
+
+// ── Party stepper ─────────────────────────────────────────────────────────────
+function changeParty(d) {
+  party = Math.max(1, Math.min(20, party + d));
+  document.getElementById('party-val').textContent = party;
+}
+
+// ── Time selection ────────────────────────────────────────────────────────────
+function selectTime(el) {
+  if (el.classList.contains('unavailable')) return;
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTime = el.dataset.t;
+  document.getElementById('err-time').classList.remove('show');
+  if (preTime) el.classList.add('selected');
+}
+
+// Pre-select time from URL
+if (preTime) {
+  setTimeout(() => {
+    const preSlot = document.querySelector(`.time-slot[data-t="${preTime}"]`);
+    if (preSlot && !preSlot.classList.contains('unavailable')) {
+      selectTime(preSlot);
+    }
+  }, 0);
+}
+
+// ── Occasion chips ────────────────────────────────────────────────────────────
+function toggleChip(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  if (selectedOccasion === el.dataset.val) {
+    selectedOccasion = null;
+  } else {
+    el.classList.add('selected');
+    selectedOccasion = el.dataset.val;
+  }
+}
+
+// ── Notification toggles ──────────────────────────────────────────────────────
+function toggleNotif(type) {
+  if (type === 'sms') {
+    notifySMS = !notifySMS;
+    document.getElementById('notif-sms').classList.toggle('selected', notifySMS);
+  } else {
+    notifyEmail = !notifyEmail;
+    document.getElementById('notif-email').classList.toggle('selected', notifyEmail);
+  }
+}
+
+// ── Step navigation ───────────────────────────────────────────────────────────
+function goStep(n) {
+  if (n === 1 && !selectedTime) {
+    document.getElementById('err-time').classList.add('show');
+    return;
+  }
+  if (n === 2) {
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    if (!phone && !email) {
+      document.getElementById('err-contact').classList.add('show');
+      return;
+    }
+    document.getElementById('err-contact').classList.remove('show');
+    updateSummary();
+  }
+
+  currentStep = n;
+  document.querySelectorAll('.pane').forEach((p, i) => p.classList.toggle('active', i === n));
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active', 'done');
+    if (i < n) t.classList.add('done');
+    else if (i === n) t.classList.add('active');
+  });
+  window.scrollTo(0, 0);
+}
+
+function updateSummary() {
+  const dateVal = document.getElementById('res-date').value;
+  const dateLabel = dateVal
+    ? new Date(dateVal + 'T12:00:00').toLocaleDateString(
+        currentLang === 'uz' ? 'uz-UZ' : currentLang === 'ru' ? 'ru-RU' : 'en-GB',
+        { weekday:'long', day:'numeric', month:'long', year:'numeric' }
+      )
+    : '—';
+  const fname = document.getElementById('fname').value || '';
+  const lname = document.getElementById('lname').value || '';
+  document.getElementById('sum-rest').textContent = document.getElementById('rest-name').textContent;
+  document.getElementById('sum-date').textContent = dateLabel;
+  document.getElementById('sum-time').textContent = selectedTime || '—';
+  document.getElementById('sum-party').textContent = party + ' ' + T[currentLang].guests;
+  document.getElementById('sum-name').textContent = (fname + ' ' + lname).trim() || '—';
+}
+
+// ── Submit booking ────────────────────────────────────────────────────────────
+async function submitBooking() {
+  const btn = document.getElementById('btn-confirm');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  const payload = {
+    restaurant: restaurantSlug,
+    restaurantName: document.getElementById('rest-name').textContent,
+    restaurantAddress: document.getElementById('rest-meta').textContent,
+    date: document.getElementById('res-date').value,
+    time: selectedTime,
+    party,
+    firstName: document.getElementById('fname').value.trim(),
+    lastName: document.getElementById('lname').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    countryCode: document.getElementById('phone-code').value,
+    occasion: selectedOccasion,
+    notes: document.getElementById('notes').value.trim(),
+    lang: currentLang,
+    notifySMS,
+    notifyEmail,
+    source,
+  };
+
+  try {
+    const res = await fetch('/api/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('ref-display').textContent = data.ref;
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('pane-success').classList.add('active');
+      document.querySelectorAll('.step-tab').forEach(t => t.classList.add('done'));
+      window.scrollTo(0, 0);
+    } else {
+      document.getElementById('err-submit').textContent = data.error || T[currentLang].errSubmit;
+      document.getElementById('err-submit').classList.add('show');
+      btn.disabled = false;
+      btn.textContent = T[currentLang].confirm;
+    }
+  } catch (e) {
+    document.getElementById('err-submit').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = T[currentLang].confirm;
+  }
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+function resetApp() {
+  selectedTime = null;
+  selectedOccasion = null;
+  party = 2;
+  document.getElementById('party-val').textContent = 2;
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('fname').value = '';
+  document.getElementById('lname').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('phone').value = '';
+  document.getElementById('notes').value = '';
+  goStep(0);
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active', 'done');
+    if (i === 0) t.classList.add('active');
+  });
+}
+
+// Init
+applyLang();
+</script>
+</body>
+</html>
 
