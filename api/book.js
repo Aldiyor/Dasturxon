@@ -1,6 +1,9 @@
-const supabase = require('../lib/db');
-const { sendConfirmationSMS } = require('../services/sms');
-const { sendConfirmationEmail } = require('../services/email');
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 function generateRef() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -35,6 +38,7 @@ module.exports = async function handler(req, res) {
   const ref = generateRef();
   const guestName = `${firstName} ${lastName || ''}`.trim();
   const phoneE164 = phone ? formatPhone(phone, countryCode || '+998') : null;
+  const selectedLang = lang || 'uz';
 
   const booking = {
     ref,
@@ -48,6 +52,7 @@ module.exports = async function handler(req, res) {
   };
 
   try {
+    // 1. Save to database
     const { error: dbError } = await supabase.from('reservations').insert({
       ref,
       restaurant_slug: restaurant,
@@ -58,7 +63,7 @@ module.exports = async function handler(req, res) {
       phone: phoneE164 || null,
       occasion: occasion || null,
       notes: notes || null,
-      lang: lang || 'uz',
+      lang: selectedLang,
       source: source || 'direct',
       notify_sms: !!notifySMS,
       notify_email: !!notifyEmail,
@@ -67,20 +72,30 @@ module.exports = async function handler(req, res) {
 
     if (dbError) throw dbError;
 
+    // 2. Send SMS (non-blocking)
     if (notifySMS && phoneE164) {
-  sendConfirmationSMS(booking, lang || 'uz')
-    .catch(err => console.error('SMS xatosi:', err));
-}
+      try {
+        const { sendConfirmationSMS } = require('../services/sms');
+        await sendConfirmationSMS(booking, selectedLang);
+      } catch (smsErr) {
+        console.error('SMS xatosi:', smsErr.message);
+      }
+    }
 
-if (notifyEmail && email) {
-  sendConfirmationEmail(booking, lang || 'uz')
-    .catch(err => console.error('Email xatosi:', err));
-}
+    // 3. Send email (non-blocking)
+    if (notifyEmail && email) {
+      try {
+        const { sendConfirmationEmail } = require('../services/email');
+        await sendConfirmationEmail(booking, selectedLang);
+      } catch (emailErr) {
+        console.error('Email xatosi:', emailErr.message);
+      }
+    }
 
     return res.status(200).json({ success: true, ref });
 
   } catch (err) {
-    console.error('Bron xatosi:', err);
+    console.error('Bron xatosi:', { message: err.message, code: err.code });
     return res.status(500).json({ error: err.message || 'Server xatosi' });
   }
 };
