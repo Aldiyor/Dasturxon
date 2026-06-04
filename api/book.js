@@ -43,6 +43,7 @@ module.exports = async function handler(req, res) {
   const booking = {
     ref,
     restaurant: restaurantName || restaurant,
+    restaurantSlug: restaurant,
     address: restaurantAddress || 'Toshkent',
     date, time,
     party: Number(party),
