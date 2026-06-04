@@ -1,5 +1,6 @@
 const supabase = require('../lib/db');
 const { sendConfirmationSMS } = require('../services/sms');
+const { sendConfirmationEmail } = require('../services/email');
 
 function generateRef() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
