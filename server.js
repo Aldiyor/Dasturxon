@@ -12,6 +12,9 @@ app.post('/api/book', require('./api/book'));
 app.get('/api/reservation/:ref', require('./api/getReservation'));
 app.post('/api/cancel', require('./api/cancel'));
 
+app.get('/bron', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bron.html')));
+app.get('/bekor', (req, res) => res.sendFile(path.join(__dirname, 'public', 'bekor.html')));
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
