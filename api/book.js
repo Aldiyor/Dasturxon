@@ -68,9 +68,14 @@ module.exports = async function handler(req, res) {
     if (dbError) throw dbError;
 
     if (notifySMS && phoneE164) {
-      sendConfirmationSMS(booking, lang || 'uz')
-        .catch(err => console.error('SMS xatosi:', err));
-    }
+  sendConfirmationSMS(booking, lang || 'uz')
+    .catch(err => console.error('SMS xatosi:', err));
+}
+
+if (notifyEmail && email) {
+  sendConfirmationEmail(booking, lang || 'uz')
+    .catch(err => console.error('Email xatosi:', err));
+}
 
     return res.status(200).json({ success: true, ref });
 
