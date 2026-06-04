@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Bronni bekor qilish — DasturxonBook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f5f3ef;min-height:100vh;display:flex;flex-direction:column}
+    .header{background:#1c3d2e;padding:16px 24px}
+    .logo{color:#e8f0eb;font-size:18px;font-weight:500}
+    .logo span{font-size:11px;color:rgba(255,255,255,0.35);display:block;margin-top:2px}
+    .container{max-width:480px;margin:40px auto;padding:0 16px;width:100%}
+    .card{background:#fff;border:0.5px solid #e5e0d8;border-radius:14px;padding:28px}
+    .card-title{font-size:20px;font-weight:600;color:#1a1a18;margin-bottom:6px}
+    .card-sub{font-size:13px;color:#6b6660;margin-bottom:22px}
+    .btn{width:100%;background:#8b2e2e;color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px}
+    .btn-secondary{background:transparent;color:#6b6660;border:0.5px solid #e5e0d8;margin-top:8px}
+    .result{padding:16px;border-radius:10px;font-size:14px;line-height:1.6;margin-top:12px}
+    .success{background:#eaf3de;color:#3b6d11;border:0.5px solid #c0dd97}
+    .error{background:#fdecea;color:#8b2e2e;border:0.5px solid #f5c0bc}
+    .ref-code{font-family:monospace;font-size:20px;letter-spacing:0.15em;color:#7a5c2e;background:#f0ece4;padding:10px 20px;border-radius:8px;text-align:center;margin-bottom:20px}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">DasturxonBook <span>Bronni bekor qilish</span></div>
+</div>
+<div class="container">
+  <div class="card" id="main-card">
+    <div class="card-title" style="color:#8b2e2e">Bronni bekor qilish</div>
+    <div class="card-sub">Quyidagi bronni bekor qilmoqchimisiz?</div>
+    <div class="ref-code" id="ref-display">—</div>
+    <button class="btn" onclick="cancelBooking()">Ha, bekor qilish</button>
+    <button class="btn btn-secondary" onclick="window.location.href='/bron?ref='+getRef()">Yo'q, qaytish</button>
+    <div id="result-area"></div>
+  </div>
+</div>
+
+<script>
+function getRef() {
+  return new URLSearchParams(window.location.search).get('ref') || '';
+}
+
+const ref = getRef().toUpperCase();
+document.getElementById('ref-display').textContent = ref || 'Ref topilmadi';
+
+async function cancelBooking() {
+  if (!ref) return;
+  const area = document.getElementById('result-area');
+  area.innerHTML = '<div class="result" style="background:#f5f3ef;color:#6b6660;">Bekor qilinmoqda...</div>';
+
+  try {
+    const res = await fetch('/api/cancel', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ ref }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('main-card').innerHTML =
+        `<div class="result success">
+          <b>✓ Bron bekor qilindi</b><br/>
+          ${ref} raqamli broningiz muvaffaqiyatli bekor qilindi.
+        </div>`;
+    } else {
+      area.innerHTML = `<div class="result error">${data.error || 'Xatolik yuz berdi.'}</div>`;
+    }
+  } catch(e) {
+    area.innerHTML = '<div class="result error">Xatolik yuz berdi. Qayta urining.</div>';
+  }
+}
+</script>
+</body>
+</html>
