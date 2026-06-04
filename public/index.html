@@ -864,6 +864,25 @@ function resetApp() {
   });
 }
 
+  // Handle /bron and /bekor routes via hash or query
+function handleRoute() {
+  const path = window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get('ref');
+
+  if (path.includes('bron') || path.includes('bekor')) {
+    document.getElementById('app-booking').style.display = 'none';
+    document.getElementById('app-manage').style.display = 'block';
+    if (ref) {
+      document.getElementById('manage-ref-input').value = ref.toUpperCase();
+      lookupBooking();
+    }
+    if (path.includes('bekor') && ref) {
+      setTimeout(showCancelConfirm, 800);
+    }
+  }
+}
+  
 // Init
 applyLang();
 </script>
