@@ -1,18 +1,13 @@
-const fetch = require('node-fetch');
-
 async function sendSMS(to, text) {
   const phone = to.replace(/^\+/, '');
-  
+
   const res = await fetch('https://devsms.uz/api/send-sms', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${process.env.DEVSMS_API_KEY}`,
     },
-    body: JSON.stringify({
-      phone: phone,
-      text: text,
-    }),
+    body: JSON.stringify({ phone, text }),
   });
 
   const data = await res.json();
