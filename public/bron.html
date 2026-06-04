@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Bronni boshqarish — DasturxonBook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#f5f3ef;min-height:100vh;display:flex;flex-direction:column}
+    .header{background:#1c3d2e;padding:16px 24px}
+    .logo{color:#e8f0eb;font-size:18px;font-weight:500}
+    .logo span{font-size:11px;color:rgba(255,255,255,0.35);display:block;margin-top:2px;letter-spacing:0.1em}
+    .container{max-width:480px;margin:40px auto;padding:0 16px;width:100%}
+    .card{background:#fff;border:0.5px solid #e5e0d8;border-radius:14px;padding:28px;margin-bottom:16px}
+    .card-title{font-size:20px;font-weight:600;color:#1a1a18;margin-bottom:6px}
+    .card-sub{font-size:13px;color:#6b6660;margin-bottom:22px}
+    .field{margin-bottom:14px}
+    label{display:block;font-size:11px;font-weight:500;color:#6b6660;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px}
+    input{width:100%;border:0.5px solid #e5e0d8;border-radius:8px;padding:11px 14px;font-size:14px;font-family:'Inter',sans-serif;color:#1a1a18;background:#fff;outline:none}
+    input:focus{border-color:#1c3d2e}
+    .btn{width:100%;background:#1c3d2e;color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px}
+    .btn:hover{opacity:0.85}
+    .btn-danger{background:#8b2e2e}
+    .btn-secondary{background:transparent;color:#6b6660;border:0.5px solid #e5e0d8;margin-top:8px}
+    .result{display:none;padding:16px;border-radius:10px;font-size:14px;line-height:1.6;margin-top:12px}
+    .result.success{background:#eaf3de;color:#3b6d11;border:0.5px solid #c0dd97}
+    .result.error{background:#fdecea;color:#8b2e2e;border:0.5px solid #f5c0bc}
+    .detail-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid #e5e0d8;font-size:14px}
+    .detail-row:last-child{border-bottom:none}
+    .detail-key{color:#6b6660}
+    .detail-val{font-weight:500;color:#1a1a18}
+    .ref-code{font-family:monospace;font-size:18px;letter-spacing:0.15em;color:#7a5c2e;background:#f0ece4;padding:10px 20px;border-radius:8px;text-align:center;margin-bottom:16px}
+    #booking-details{display:none}
+    #lookup-section{display:block}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">DasturxonBook <span>Bronni boshqarish</span></div>
+</div>
+<div class="container">
+
+  <!-- Lookup section -->
+  <div class="card" id="lookup-section">
+    <div class="card-title">Bronni topish</div>
+    <div class="card-sub">Bron kodingizni kiriting</div>
+    <div class="field">
+      <label>Bron kodi</label>
+      <input type="text" id="ref-input" placeholder="BN-XXXXX" style="text-transform:uppercase;letter-spacing:0.1em"/>
+    </div>
+    <button class="btn" onclick="lookupBooking()">Qidirish</button>
+    <div class="result" id="lookup-result"></div>
+  </div>
+
+  <!-- Booking details section -->
+  <div class="card" id="booking-details">
+    <div class="card-title">Bron ma'lumotlari</div>
+    <div class="card-sub" id="booking-status-label">Tasdiqlangan</div>
+    <div class="ref-code" id="booking-ref"></div>
+    <div id="detail-rows"></div>
+    <div style="margin-top:20px">
+      <button class="btn btn-danger" onclick="showCancelConfirm()" id="cancel-btn">Bronni bekor qilish</button>
+      <button class="btn btn-secondary" onclick="resetPage()">Orqaga</button>
+    </div>
+    <div class="result" id="cancel-result"></div>
+  </div>
+
+  <!-- Cancel confirm -->
+  <div class="card" id="cancel-confirm" style="display:none">
+    <div class="card-title" style="color:#8b2e2e">Bekor qilishni tasdiqlang</div>
+    <div class="card-sub" style="margin-bottom:16px">Bu amalni qaytarib bo'lmaydi. Haqiqatan ham bekor qilmoqchimisiz?</div>
+    <button class="btn btn-danger" onclick="cancelBooking()">Ha, bekor qilish</button>
+    <button class="btn btn-secondary" onclick="hideCancelConfirm()">Yo'q, qaytish</button>
+    <div class="result" id="cancel-confirm-result"></div>
+  </div>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const refFromUrl = params.get('ref');
+if (refFromUrl) {
+  document.getElementById('ref-input').value = refFromUrl.toUpperCase();
+  lookupBooking();
+}
+
+async function lookupBooking() {
+  const ref = document.getElementById('ref-input').value.trim().toUpperCase();
+  if (!ref) return;
+
+  const result = document.getElementById('lookup-result');
+  result.style.display = 'block';
+  result.className = 'result';
+  result.textContent = 'Qidirilmoqda...';
+
+  try {
+    const res = await fetch(`/api/reservation/${ref}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.reservation) {
+      result.className = 'result error';
+      result.textContent = 'Bron topilmadi. Kodni tekshiring.';
+      return;
+    }
+
+    const b = data.reservation;
+    result.style.display = 'none';
+    document.getElementById('lookup-section').style.display = 'none';
+
+    document.getElementById('booking-ref').textContent = b.ref;
+    document.getElementById('booking-status-label').textContent =
+      b.status === 'confirmed' ? '✓ Tasdiqlangan' :
+      b.status === 'cancelled' ? '✗ Bekor qilingan' : b.status;
+
+    const rows = [
+      ['Restoran', b.restaurant_slug],
+      ['Sana', b.date],
+      ['Vaqt', b.time],
+      ['Mehmonlar', b.party],
+      ['Ism', b.guest_name],
+    ];
+
+    document.getElementById('detail-rows').innerHTML = rows.map(([k,v]) =>
+      `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v || '—'}</span></div>`
+    ).join('');
+
+    if (b.status === 'cancelled') {
+      document.getElementById('cancel-btn').style.display = 'none';
+    }
+
+    document.getElementById('booking-details').style.display = 'block';
+
+  } catch(e) {
+    result.className = 'result error';
+    result.textContent = 'Xatolik yuz berdi. Qayta urining.';
+  }
+}
+
+function showCancelConfirm() {
+  document.getElementById('cancel-confirm').style.display = 'block';
+  document.getElementById('booking-details').style.display = 'none';
+}
+
+function hideCancelConfirm() {
+  document.getElementById('cancel-confirm').style.display = 'none';
+  document.getElementById('booking-details').style.display = 'block';
+}
+
+async function cancelBooking() {
+  const ref = document.getElementById('booking-ref').textContent.trim();
+  const result = document.getElementById('cancel-confirm-result');
+  result.style.display = 'block';
+  result.className = 'result';
+  result.textContent = 'Bekor qilinmoqda...';
+
+  try {
+    const res = await fetch('/api/cancel', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ ref }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      result.className = 'result success';
+      result.textContent = 'Broningiz bekor qilindi.';
+      document.getElementById('cancel-confirm').innerHTML =
+        `<div class="result success" style="display:block">✓ Broningiz muvaffaqiyatli bekor qilindi.</div>`;
+    } else {
+      result.className = 'result error';
+      result.textContent = data.error || 'Xatolik yuz berdi.';
+    }
+  } catch(e) {
+    result.className = 'result error';
+    result.textContent = 'Xatolik yuz berdi. Qayta urining.';
+  }
+}
+
+function resetPage() {
+  document.getElementById('lookup-section').style.display = 'block';
+  document.getElementById('booking-details').style.display = 'none';
+  document.getElementById('cancel-confirm').style.display = 'none';
+  document.getElementById('ref-input').value = '';
+}
+</script>
+</body>
+</html>
