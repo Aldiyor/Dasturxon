@@ -21,7 +21,7 @@ async function sendConfirmationEmail(booking, lang = 'uz') {
     ru: {
   subject: `Бронирование подтверждено — ${restaurant} · ${date}, ${time}`,
   confirmed: 'Бронирование подтверждено',
-  guests: 'гость.',
+  guests: 'Гость/и',
   manage: 'Управление бронью',
   cancel: 'Отменить бронь',
   refLabel: 'Код бронирования',
