@@ -4,8 +4,8 @@ async function sendConfirmationEmail(booking, lang = 'uz') {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { guestName, restaurant, date, time, party, ref, email, address } = booking;
 
-  const manageUrl = `${process.env.APP_URL || 'https://dasturxon.vercel.app'}/bron?ref=${ref}`;
-  const cancelUrl = `${process.env.APP_URL || 'https://dasturxon.vercel.app'}/bekor?ref=${ref}`;
+  const manageUrl = `${process.env.APP_URL || 'https://dasturxon.vercel.app'}/?view=manage&ref=${ref}`;
+const cancelUrl = `${process.env.APP_URL || 'https://dasturxon.vercel.app'}/?view=cancel&ref=${ref}`;
 
   const subjects = {
     uz: `Bron tasdiqlandi — ${restaurant} · ${date}, ${time}`,
