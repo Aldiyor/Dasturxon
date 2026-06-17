@@ -186,7 +186,7 @@ async function lookup() {
   if (!ref) return;
   document.getElementById('lookup-msg').innerHTML = `<div class="alert alert-info">${T[lang].searching}</div>`;
   try {
-    const res = await fetch(`/api/reservation/${ref}`);
+    const res = await fetch(`https://dasturxon-rho.vercel.app/api/reservation/${ref}`);
     const data = await res.json();
     if (!res.ok || !data.reservation) {
       msg('lookup-msg', T[lang].notFound, 'error');
@@ -222,7 +222,7 @@ async function doCancel() {
   const ref = currentBooking.ref;
   document.getElementById('cancel-msg').innerHTML = `<div class="alert alert-info">${T[lang].cancelling}</div>`;
   try {
-    const res = await fetch('/api/cancel', {
+    const res = await fetch('https://dasturxon-rho.vercel.app/api/cancel', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ ref }),
