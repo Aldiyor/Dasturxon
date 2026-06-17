@@ -1,3 +1,7 @@
 {
-  "cleanUrls": false
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/manage", "destination": "/manage.html" },
+    { "source": "/api/:path*", "destination": "/api/:path*" }
+  ]
 }
